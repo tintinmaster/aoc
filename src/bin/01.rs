@@ -1,8 +1,10 @@
+use std::collections::HashMap;
 use anyhow::*;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use itertools::Itertools;
 use adv_code_2024::*;
 
 const DAY: &str = "01";
@@ -55,10 +57,23 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-    Ok(0)
+        let mut counter1: HashMap<usize, usize> = HashMap::new();
+        let mut counter2: HashMap<usize, usize> = HashMap::new();
+        for line in reader.lines() {
+            let (val1, val2) = line?.split_whitespace().map(|x| x.parse::<usize>().unwrap()).collect_tuple().unwrap();
+            *counter1.entry(val1).or_insert(0) += 1;
+            *counter2.entry(val2).or_insert(0) += 1;
+        }
+
+        let mut answer = 0;
+        for (elem, count) in &counter1 {
+            answer += *count * (*elem * counter2.get(elem).or(Some(&0)).unwrap());
+        }
+
+        Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(31, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
