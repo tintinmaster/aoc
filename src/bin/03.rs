@@ -1,10 +1,10 @@
+use adv_code_2024::*;
 use anyhow::*;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use adv_code_2024::*;
 use regex::Regex;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 const DAY: &str = "03";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
@@ -26,7 +26,7 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let re = Regex::new(r"mul\((?<first>[0-9]{1,3}),(?<second>[0-9]{1,3})\)")?;
 
-        let input = reader.lines().flatten().collect::<String>();
+        let input = reader.lines().map_while(Result::ok).collect::<String>();
 
         let mut answer = 0;
         for result in re.captures_iter(&input) {
@@ -50,9 +50,11 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let re = Regex::new(r"(mul\((?<first>[0-9]{1,3}),(?<second>[0-9]{1,3})\))|(?<do>do\(\))|(?<dont>don't\(\))")?;
+        let re = Regex::new(
+            r"(mul\((?<first>[0-9]{1,3}),(?<second>[0-9]{1,3})\))|(?<do>do\(\))|(?<dont>don't\(\))",
+        )?;
 
-        let input = reader.lines().flatten().collect::<String>();
+        let input = reader.lines().map_while(Result::ok).collect::<String>();
 
         let mut answer = 0;
         let mut enabled = true;
@@ -65,7 +67,7 @@ fn main() -> Result<()> {
                 let val1 = result["first"].parse::<i64>()?;
                 let val2 = result["second"].parse::<i64>()?;
 
-                if (enabled) {
+                if enabled {
                     answer += val1 * val2;
                 }
             }

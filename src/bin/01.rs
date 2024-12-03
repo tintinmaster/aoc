@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use adv_code_2024::*;
 use anyhow::*;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use itertools::Itertools;
-use adv_code_2024::*;
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 const DAY: &str = "01";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
@@ -29,10 +29,13 @@ fn main() -> Result<()> {
         // TODO: Solve Part 1 of the puzzle
         let (mut list1, mut list2): (Vec<usize>, Vec<usize>) = reader
             .lines()
-            .filter_map(Result::ok)
+            .map_while(Result::ok)
             .filter_map(|line| {
                 let mut parts = line.split_whitespace();
-                Some((parts.next()?.parse::<usize>().unwrap(), parts.next()?.parse::<usize>().unwrap()))
+                Some((
+                    parts.next()?.parse::<usize>().unwrap(),
+                    parts.next()?.parse::<usize>().unwrap(),
+                ))
             })
             .unzip();
         list1.sort();
@@ -40,7 +43,7 @@ fn main() -> Result<()> {
 
         let mut answer = 0;
         for i in 0..list1.len() {
-           answer += list1[i].abs_diff(list2[i]);
+            answer += list1[i].abs_diff(list2[i]);
         }
         Ok(answer)
     }
@@ -60,14 +63,18 @@ fn main() -> Result<()> {
         let mut counter1: HashMap<usize, usize> = HashMap::new();
         let mut counter2: HashMap<usize, usize> = HashMap::new();
         for line in reader.lines() {
-            let (val1, val2) = line?.split_whitespace().map(|x| x.parse::<usize>().unwrap()).collect_tuple().unwrap();
+            let (val1, val2) = line?
+                .split_whitespace()
+                .map(|x| x.parse::<usize>().unwrap())
+                .collect_tuple()
+                .unwrap();
             *counter1.entry(val1).or_insert(0) += 1;
             *counter2.entry(val2).or_insert(0) += 1;
         }
 
         let mut answer = 0;
         for (elem, count) in &counter1 {
-            answer += *count * (*elem * counter2.get(elem).or(Some(&0)).unwrap());
+            answer += *count * (*elem * counter2.get(elem).unwrap_or(&0));
         }
 
         Ok(answer)

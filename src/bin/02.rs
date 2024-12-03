@@ -2,6 +2,7 @@ use adv_code_2024::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use std::cmp::Ordering;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -37,10 +38,10 @@ fn main() -> Result<()> {
             let mut not_safe = false;
 
             for i in 0..numbers.len() - 1 {
-                if numbers[i] < numbers[i + 1] {
-                    increasing = true;
-                } else if numbers[i] > numbers[i + 1] {
-                    decreasing = true;
+                match numbers[i].cmp(&numbers[i + 1]) {
+                    Ordering::Greater => decreasing = true,
+                    Ordering::Less => increasing = true,
+                    Ordering::Equal => not_safe = true,
                 }
 
                 if numbers[i].abs_diff(numbers[i + 1]) < 1
@@ -91,10 +92,10 @@ fn main() -> Result<()> {
                 let mut not_safe = false;
 
                 for i in 0..numbers_i.len() - 1 {
-                    if numbers_i[i] < numbers_i[i + 1] {
-                        increasing = true;
-                    } else if numbers_i[i] > numbers_i[i + 1] {
-                        decreasing = true;
+                    match numbers_i[i].cmp(&numbers_i[i + 1]) {
+                        Ordering::Greater => decreasing = true,
+                        Ordering::Less => increasing = true,
+                        Ordering::Equal => not_safe = true,
                     }
 
                     if numbers_i[i].abs_diff(numbers_i[i + 1]) < 1
